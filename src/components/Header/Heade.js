@@ -12,8 +12,8 @@ const Header = () => {
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
                         <Nav.Link href="#home">Home</Nav.Link>
-                        <Nav.Link href="#link">Users</Nav.Link>
-                        <Nav.Link href="#link">Admin</Nav.Link>
+                        <Nav.Link href="/users">Users</Nav.Link>
+                        <Nav.Link href="/admins">Admin</Nav.Link>
                     </Nav>
                     <Nav>
                         <NavDropdown title="Setting" id="basic-nav-dropdown">
