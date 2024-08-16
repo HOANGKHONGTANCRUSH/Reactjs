@@ -2,14 +2,22 @@ import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { FcPlus } from "react-icons/fc";
+import axios from 'axios';
 
-const ModalCreateUser = () => {
-    const [show, setShow] = useState(false);
+const ModalCreateUser = (props) => {
+    const { show, setShow } = props
 
-    const handleClose = () => setShow(false);
+    const handleClose = () => {
+        setShow(false)
+        setEmail("");
+        setPassword("");
+        setRole("ADMIN");
+        setImage("");
+        setPreviewImage("");
+    };
     const handleShow = () => setShow(true);
 
-    const [emai, setEmai] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [username, setUsername] = useState("");
     const [role, setRole] = useState("ADMIN");
@@ -27,11 +35,32 @@ const ModalCreateUser = () => {
         console.log("hallo", event.target.files[0])
     }
 
+    const handlSubmitCreateUser = async () => {
+        // let data = {
+        //     email: email,
+        //     password: password,
+        //     username: username,
+        //     role: role,
+        //     userImage: image
+        // }
+        // console.log(">>>>", data)
+
+        const data = new FormData();
+        data.append('email', email);
+        data.append('password', password);
+        data.append('username', username);
+        data.append('role', role);
+        data.append('userImage', image);
+
+        let res = await axios.post('http://localhost:8081/api/v1/participant', data)
+        console.log(">>>> res", res)
+    }
+
     return (
         <>
-            <Button variant="primary" onClick={handleShow}>
+            {/* <Button variant="primary" onClick={handleShow}>
                 Launch demo modal
-            </Button>
+            </Button> */}
 
             <Modal
                 show={show}
@@ -47,8 +76,8 @@ const ModalCreateUser = () => {
                     <form className="row g-3">
                         <div className="col-md-6">
                             <label className="form-label">Email</label>
-                            <input type="email" className="form-control" value={emai}
-                                onChange={(event) => setEmai(event.target.value)}
+                            <input type="email" className="form-control" value={email}
+                                onChange={(event) => setEmail(event.target.value)}
                             />
                         </div>
                         <div className="col-md-6">
@@ -64,7 +93,7 @@ const ModalCreateUser = () => {
                         </div>
                         <div className="col-md-4">
                             <label className="form-label">Role</label>
-                            <select className="form-select" onChange={(event) => setRole(event.target.value)}>
+                            <select className="form-select" onChange={(event) => setRole(event.target.value)} value={role}>
                                 <option selected value="USER">USER</option>
                                 <option value="ADMIN">ADMIN</option>
                             </select>
@@ -88,7 +117,9 @@ const ModalCreateUser = () => {
                     <Button variant="secondary" onClick={handleClose}>
                         Close
                     </Button>
-                    <Button variant="primary" onClick={handleClose}>
+                    <Button variant="primary"
+                        onClick={() => handlSubmitCreateUser()}
+                    >
                         Save
                     </Button>
                 </Modal.Footer>
