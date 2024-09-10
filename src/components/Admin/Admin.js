@@ -36,7 +36,7 @@ const Admin = (props) => {
                     <Outlet />
                 </div>
             </div>
-            <button onClick={notify}>Show Toast</button>
+            {/* <button onClick={notify}>Show Toast</button> */}
             <ToastContainer />
         </div>
     );
