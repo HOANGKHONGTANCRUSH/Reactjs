@@ -9,7 +9,7 @@ const TableUser = (props) => {
 
     return (
         <>
-            <table class="table table-dark table-striped table-hover table-bordered">
+            <table className="table table-dark table-striped table-hover table-bordered">
                 <thead>
                     <tr>
                         <th scope="col">Id</th>

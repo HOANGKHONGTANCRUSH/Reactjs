@@ -28,8 +28,11 @@ const ManageUser = (props) => {
 
     const handleClickBtnUpdate = (user) => {
         setshowModelUpdateUser(true);
-        console.log("updata", user);
         setDataUpdate(user);
+    }
+
+    const resetUpdateData = () => {
+        setDataUpdate({});
     }
 
     return (
@@ -56,6 +59,8 @@ const ManageUser = (props) => {
                     setShow={setshowModelUpdateUser}
                     show={showModelUpdateUser}
                     dataUpdate={dataUpdate}
+                    fetchListUsers={fetchListUsers}
+                    resetUpdateData={resetUpdateData}
                 />
             </div>
         </div>
