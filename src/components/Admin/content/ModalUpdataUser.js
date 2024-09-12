@@ -66,8 +66,6 @@ const ModalUpdataUser = (props) => {
             toast.error(data.EM)
         }
     }
-
-    console.log("check tun der ", dataUpdate)
     return (
         <>
             {/* <Button variant="primary" onClick={handleShow}>
