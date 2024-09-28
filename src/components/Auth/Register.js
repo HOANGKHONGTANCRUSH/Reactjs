@@ -1,28 +1,28 @@
 import { useState } from 'react'
-import './Login.scss'
+import './Register.scss'
 import { useNavigate } from 'react-router-dom'
-import { postLogin } from '../../services/apiSevice'
+import { postRegister } from '../../services/apiSevice'
 import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
-import { doLogin } from '../../redux/action/useAction';
+import { VscEye, VscEyeClosed } from "react-icons/vsc";
 
-const Login = (props) => {
+const Register = (props) => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [username, setUsername] = useState("")
+    const [isShowpassword, setShowpassword] = useState(false)
     const navigate = useNavigate();
-    const dispatch = useDispatch();
 
-    const handleLogin = async () => {
-        let data = await postLogin(email, password)
+    const handleRegister = async () => {
+        let data = await postRegister(email, password, username)
         if (data && +data.EC === 0) {
-            dispatch(doLogin(data))
             toast.success(data.EM)
-            navigate('/')
+            navigate('/Login')
         }
 
         if (data && data.EC !== 0) {
             toast.error(data.EM)
         }
+
         const validateEmail = (email) => {
             return String(email)
                 .toLowerCase()
@@ -44,12 +44,11 @@ const Login = (props) => {
         }
     }
 
-
     return (
         <div className="login-container">
             <div className='header'>
                 <span>Don't have an account yet?</span>
-                <button onClick={() => navigate('/register')}>Sign up</button>
+                <button onClick={() => navigate('/Login')}>Log in</button>
             </div>
             <div className='title col-4 mx-auto'>
                 Hoang V
@@ -67,21 +66,43 @@ const Login = (props) => {
                         onChange={(event) => setEmail(event.target.value)}
                     />
                 </div>
-                <div className='form-group'>
+                <div className='form-group pass-group'>
                     <label>Password</label>
                     <input
-                        type={"password"}
+                        type={isShowpassword ? "text" : "password"}
                         className='form-control'
                         value={password}
                         onChange={(event) => setPassword(event.target.value)}
+                    />
+                    {isShowpassword ?
+                        <span
+                            className='icons-eye'
+                            onClick={() => setShowpassword(false)}
+                        >
+                            <VscEye />
+                        </span>
+                        :
+                        <span
+                            onClick={() => setShowpassword(true)}
+                            className='icons-eye'>
+                            <VscEyeClosed />
+                        </span>
+                    }
+                </div><div className='form-group'>
+                    <label>Username</label>
+                    <input
+                        type={"username"}
+                        className='form-control'
+                        value={username}
+                        onChange={(event) => setUsername(event.target.value)}
                     />
                 </div>
                 <span className='forgot-password'>Forgot password ?</span>
                 <div>
                     <button
                         className='btn-submit'
-                        onClick={() => handleLogin()}
-                    >Login to </button>
+                        onClick={() => handleRegister()}
+                    >Register to </button>
                 </div>
                 <div className='text-center'>
                     <span className='back' onClick={() => { navigate('/') }}> &#60;&#60; Go to Homepage</span>
@@ -91,4 +112,4 @@ const Login = (props) => {
     )
 }
 
-export default Login
+export default Register
