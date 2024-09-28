@@ -5,43 +5,50 @@ import { postLogin } from '../../services/apiSevice'
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { doLogin } from '../../redux/action/useAction';
+import { ImSpinner9 } from "react-icons/im";
 
 const Login = (props) => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const [isLoading, setLoading] = useState(false);
 
+
+
+    const validateEmail = (email) => {
+        return String(email)
+            .toLowerCase()
+            .match(
+                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            );
+    };
     const handleLogin = async () => {
-        let data = await postLogin(email, password)
-        if (data && +data.EC === 0) {
-            dispatch(doLogin(data))
-            toast.success(data.EM)
-            navigate('/')
-        }
 
-        if (data && data.EC !== 0) {
-            toast.error(data.EM)
-        }
-        const validateEmail = (email) => {
-            return String(email)
-                .toLowerCase()
-                .match(
-                    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                );
-        };
 
         const isValiEmail = validateEmail(email);
         if (!isValiEmail) {
             toast.error("Invalid email 🦄")
-            // toast.success()
-            // toast.info()
             return;
         }
         if (!password) {
             toast.error("invalid password")
             return;
         }
+        setLoading(true);
+        let data = await postLogin(email, password)
+        if (data && +data.EC === 0) {
+            dispatch(doLogin(data))
+            toast.success(data.EM)
+            setLoading(false);
+            navigate('/')
+        }
+
+        if (data && data.EC !== 0) {
+            toast.error(data.EM)
+            setLoading(false);
+        }
+
     }
 
 
@@ -81,7 +88,12 @@ const Login = (props) => {
                     <button
                         className='btn-submit'
                         onClick={() => handleLogin()}
-                    >Login to </button>
+                        disabled={isLoading}
+                    >
+                        {isLoading === true && <ImSpinner9 className="loader-icon" />}
+
+                        <span>Login to</span>
+                    </button>
                 </div>
                 <div className='text-center'>
                     <span className='back' onClick={() => { navigate('/') }}> &#60;&#60; Go to Homepage</span>
