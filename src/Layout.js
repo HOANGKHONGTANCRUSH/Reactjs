@@ -9,8 +9,19 @@ import App from './App';
 import { ToastContainer, toast, Bounce } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Register from './components/Auth/Register';
+import ListQuiz from './components/User/ListQuiz';
+import DetailQuiz from './components/User/DetailQuiz';
 
 const Layout = (props) => {
+    const NotFound = () => {
+        return (
+            <div class="container mt-3 alert alert-danger">
+                404.Not found data with your current URL
+            </div>
+        )
+    }
+
+
     const notify = () => {
         toast('🦄 Wow so easy!', {
             position: "top-right",
@@ -29,14 +40,17 @@ const Layout = (props) => {
             <Routes>
                 <Route Route path='/' element={<App />}>
                     <Route path='/homepages' element={<Homepage />} />
-                    <Route path='/users' element={<User />} />
+                    <Route path='/users' element={<ListQuiz />} />
                 </Route>
+                <Route path='/quiz/:id' element={<DetailQuiz />} />
                 <Route path='/admins' element={<Admin />} >
                     <Route index element={<DashBoard />} />
                     <Route path='manage-users' element={<ManageUser />} />
                 </Route>
                 <Route path="/login" element={<Login />} />
                 <Route path="/Register" element={<Register />} />
+
+                <Route path="*" element={<NotFound />} />
 
             </Routes>
             <ToastContainer />
