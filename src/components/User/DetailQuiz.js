@@ -10,7 +10,6 @@ const DetailQuiz = (props) => {
     const params = useParams();
     const location = useLocation();
 
-    console.log(location)
     const quizId = params.id;
 
     const [dataQuiz, setDataQuiz] = useState([])
@@ -22,7 +21,6 @@ const DetailQuiz = (props) => {
 
     const fetchQuestions = async () => {
         let res = await getDataQuiz(quizId);
-        console.log('>>> check :', res)
         if (res && res.EC === 0) {
             let raw = res.DT;
             let data = _.chain(raw)
@@ -37,9 +35,9 @@ const DetailQuiz = (props) => {
                             questionDescription = item.description;
                             image = item.image;
                         }
+                        item.answers.isSelected = false;
                         answers.push(item.answers);
                     })
-                    console.log('value: ', value, 'key :', key)
                     return { questionId: key, answers, questionDescription, image }
                 }
                 )
@@ -49,7 +47,6 @@ const DetailQuiz = (props) => {
         }
     }
 
-    console.log("checll", dataQuiz)
     const hanleNext = () => {
         if (dataQuiz && dataQuiz.length > index + 1)
             setIndex(index + 1)
@@ -57,6 +54,26 @@ const DetailQuiz = (props) => {
     const hanlePrev = () => {
         if (index - 1 < 0) return;
         setIndex(index - 1)
+    }
+
+    const handleCheckBox = (answerId, questionId) => {
+        let dataQuizClone = _.cloneDeep(dataQuiz);
+        let question = dataQuizClone.find(item => +item.questionId === +questionId);
+        if (question && question.answers) {
+            let b = question.answers.map(item => {
+                if (+item.id === +answerId) {
+                    item.isSelected = !item.isSelected;
+                }
+                return item;
+            })
+            question.answers = b;
+            // console.log(b)
+        }
+        let index = dataQuizClone.findIndex(item => +item.questionId === +questionId)
+        if (index > -1) {
+            dataQuizClone[index] = question;
+            setDataQuiz(dataQuizClone);
+        }
     }
     return (
         <div className="detail-quiz-container">
@@ -70,6 +87,7 @@ const DetailQuiz = (props) => {
                 </div>
                 <div className="q-content">
                     <Question
+                        handleCheckBox={handleCheckBox}
                         index={index}
                         data={dataQuiz && dataQuiz.length > 0
                             ?
@@ -84,7 +102,9 @@ const DetailQuiz = (props) => {
                     >Prev</button>
                     <button className="btn btn-secondary mr-3"
                         onClick={() => hanleNext()}
-                    >Next</button>
+                    >Next</button> <button className="btn btn-warning"
+                        onClick={() => hanleNext()}
+                    >Finish</button>
                 </div>
             </div>
             <div className="right-content">
