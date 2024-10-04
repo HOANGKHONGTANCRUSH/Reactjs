@@ -15,6 +15,13 @@
             border: 1px solid green;
         }
 
-        .admin-main {}
+        .admin-main {
+            height: calc(100vh - 40px);
+
+            .use-pagination {
+                display: flex;
+                justify-content: center;
+            }
+        }
     }
 }
