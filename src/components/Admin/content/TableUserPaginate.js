@@ -60,7 +60,7 @@ const TableUserPaginate = (props) => {
 
                 </tbody>
             </table >
-            <div className="d-flex justify-content-center">
+            {/* <div className="d-flex justify-content-center">
                 <ReactPaginate
                     nextLabel="Next >"
                     onPageChange={handlePageClick}
@@ -82,7 +82,7 @@ const TableUserPaginate = (props) => {
                     renderOnZeroPageCount={null}
                     forcePage={props.currentPage - 1}
                 />
-            </div>
+            </div> */}
         </>
     )
 }

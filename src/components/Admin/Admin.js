@@ -19,11 +19,13 @@ const Admin = (props) => {
                 <div className="admin-header">
                     <FaBars onClick={() => setCollapsed(!collapsed)} />
                 </div>
-                <PerfectScrollbar>
-                    <div className="admin-main">
+
+                <div className="admin-main">
+                    <PerfectScrollbar>
                         <Outlet />
-                    </div>
-                </PerfectScrollbar>
+                    </PerfectScrollbar>
+                </div>
+
             </div>
             {/* <button onClick={notify}>Show Toast</button> */}
 

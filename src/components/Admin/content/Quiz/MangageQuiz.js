@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { FcPlus } from "react-icons/fc";
 import QuizTable from './QuizTable';
 import Accordion from 'react-bootstrap/Accordion';
+import ModalUpdateQuiz from './ModalUpdateQuiz';
 
 
 
@@ -20,10 +21,16 @@ const MangageQuiz = (props) => {
     const [description, setDescription] = useState('');
     const [type, setType] = useState('');
     const [image, setImage] = useState(null);
+    const [previewImage, setPreviewImage] = useState("");
+
+    // const [showModelUpdateUser, setshowModelUpdateUser] = useState(false)
+    // const [dataUpdate, setDataUpdate] = useState({})
 
     const handleChangeFile = (event) => {
         if (event.target && event.target.files && event.target.files[0]) {
-            setImage(event.target.files[0])
+            const file = event.target.files[0];
+            setImage(file);
+            setPreviewImage(URL.createObjectURL(file));
         }
     }
     const handleSumitQuiz = async () => {
@@ -37,10 +44,16 @@ const MangageQuiz = (props) => {
             setName('');
             setDescription('');
             setImage(null)
+            setPreviewImage("");
         } else {
             toast.error(res.EM)
         }
     }
+
+    // const handleClickBtnUpdate = (quiz) => {
+    //     setshowModelUpdateUser(true);
+    //     setDataUpdate(quiz);
+    // }
 
     return (
         <div className="quiz-container">
@@ -74,7 +87,6 @@ const MangageQuiz = (props) => {
                                 <div className='my-3'>
                                     <Select
                                         value={type}
-                                        // onChange={this.handleChange}
                                         options={options}
                                         placeholder={'Quiz type ...'}
                                         defaultValue={type}
@@ -104,6 +116,7 @@ const MangageQuiz = (props) => {
             </Accordion>
             <div className="list-detail">
                 <QuizTable />
+                {/* <ModalUpdateQuiz /> */}
             </div>
         </div>
     )

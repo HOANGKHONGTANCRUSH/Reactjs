@@ -29,7 +29,6 @@ const ModalUpdataUser = (props) => {
     const [previewImage, setPreviewImage] = useState("");
 
     useEffect(() => {
-        console.log("run useefect")
         if (!_.isElement(dataUpdate)) {
             setEmail(dataUpdate.email);
             setUsername(dataUpdate.username);
@@ -49,8 +48,6 @@ const ModalUpdataUser = (props) => {
         } else {
             // setPreviewImage("");
         }
-
-        console.log("hallo", event.target.files[0])
     }
 
     const handlSubmitCreateUser = async () => {
