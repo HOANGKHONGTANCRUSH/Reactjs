@@ -20,13 +20,13 @@ const Question = (props) => {
         [
             {
                 id: uuidv4(),
-                desciption: 'question 1',
+                desciption: ' ',
                 imageFile: '',
                 imageName: '',
                 answers: [
                     {
                         id: uuidv4(),
-                        desciption: 'answer 1',
+                        desciption: ' ',
                         isCorrect: false
                     },
                 ]
@@ -90,6 +90,55 @@ const Question = (props) => {
         }
 
     }
+
+    const handleOnchange = (type, questionId, value) => {
+        if (type === 'QUESTION') {
+            let questionCLone = _.cloneDeep(questions)
+            let index = questionCLone.findIndex(item => item.id === questionId);
+            if (index > -1) {
+                questionCLone[index].desciption = value
+                setQuestion(questionCLone);
+
+            }
+        }
+    }
+
+
+    const handleOnChangeFileQuestion = (questionId, event) => {
+        let questionCLone = _.cloneDeep(questions)
+        let index = questionCLone.findIndex(item => item.id === questionId);
+        if (index > -1 && event.target && event.target.files && event.target.files[0]) {
+            questionCLone[index].imageFile = event.target.files[0]
+            console.log(">>> check file :", event.target.files[0])
+            questionCLone[index].imageName = event.target.files[0].name;
+            setQuestion(questionCLone);
+
+        }
+    }
+
+    const handlAnswerQuestion = (type, answerId, questionId, value) => {
+        let questionCLone = _.cloneDeep(questions)
+        let index = questionCLone.findIndex(item => item.id === questionId);
+        if (index > -1) {
+            questionCLone[index].answers =
+                questionCLone[index].answers.map((anwser) => {
+                    if (anwser.id === answerId) {
+                        if (type === 'CHECKBOX') {
+                            anwser.isCorrect = value;
+                        } if (type === 'INPUT') {
+                            anwser.desciption = value;
+                        }
+                    }
+                    return anwser;
+                })
+            setQuestion(questionCLone);
+        }
+
+    }
+    const handleSubmitQuestionForQuiz = () => {
+        console.log("question :", questions)
+    }
+
     return (
         <div className="questions-container">
             <div className='title'>
@@ -121,15 +170,21 @@ const Question = (props) => {
                                             id="floatingInput"
                                             placeholder="name@example.com"
                                             value={question.desciption}
+                                            onChange={(event) => handleOnchange('QUESTION', question.id, event.target.value)}
                                         />
                                         <label >Question {index + 1}'s Description</label>
                                     </div>
                                     <div className='group-upload'>
-                                        <label >
+                                        <label htmlFor={`${question.id}`}>
                                             <RiImageAddFill className='label-up' />
                                         </label>
-                                        <input type={'file'} hidden />
-                                        <span>0 file is uploaded</span>
+                                        <input
+                                            id={`${question.id}`}
+                                            onChange={(event) => handleOnChangeFileQuestion(question.id, event)}
+                                            type={'file'}
+                                            hidden
+                                        />
+                                        <span>{question.imageName ? question.imageName : " 0 File is uploaded"}</span>
                                     </div>
                                     <div className='btn-add'>
                                         <span onClick={() => handleAddRemoveQuestion("Add", "")}>
@@ -150,6 +205,8 @@ const Question = (props) => {
                                                 <input
                                                     className="form-check-input iscorrect"
                                                     type="checkbox"
+                                                    checked={anwser.isCorrect}
+                                                    onChange={(event) => handlAnswerQuestion('CHECKBOX', anwser.id, question.id, event.target.checked)}
 
                                                 />
                                                 <div className="form-floating anwser-name">
@@ -159,6 +216,7 @@ const Question = (props) => {
                                                         id="floatingInput"
                                                         placeholder="name@example.com"
                                                         value={anwser.desciption}
+                                                        onChange={(event) => handlAnswerQuestion('INPUT', anwser.id, question.id, event.target.value)}
                                                     />
                                                     <label >Answers {index + 1}</label>
                                                 </div>
@@ -167,7 +225,7 @@ const Question = (props) => {
                                                         <FaPlusCircle className='icon-add' />
                                                     </span>
                                                     {question.answers.length > 1 &&
-                                                        <span onClick={() => handleAddRemoveAnswer("Remove", anwser.id)}>
+                                                        <span onClick={() => handleAddRemoveAnswer("Remove", question.id, anwser.id)}>
                                                             <FaMinusCircle className='icon-remove' />
                                                         </span>
 
@@ -181,6 +239,14 @@ const Question = (props) => {
                             </div>
                         )
                     })
+                }
+                {
+                    questions && questions.length > 0 &&
+                    <div>
+                        <button
+                            onClick={() => handleSubmitQuestionForQuiz()}
+                            className='btn btn-warning'>Save Questions</button>
+                    </div>
                 }
             </div>
         </div>
