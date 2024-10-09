@@ -8,28 +8,28 @@ import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
 import Lightbox from "react-awesome-lightbox";
 import { getAllQuizForAdmin, postCreateNewQuetionForQuiz, postCreateNewAnswerForQuizQuetion } from '../../../../../services/apiSevice';
+import { toast } from 'react-toastify';
 
 
 const Question = (props) => {
+    const initQuestion = [
+        {
+            id: uuidv4(),
+            description: ' ',
+            imageFile: '',
+            imageName: '',
+            answers: [
+                {
+                    id: uuidv4(),
+                    description: ' ',
+                    isCorrect: false
+                },
+            ]
+        },
+    ];
     const [selectedQuiz, setSelectedQuiz] = useState({})
 
-    const [questions, setQuestion] = useState(
-        [
-            {
-                id: uuidv4(),
-                description: ' ',
-                imageFile: '',
-                imageName: '',
-                answers: [
-                    {
-                        id: uuidv4(),
-                        description: ' ',
-                        isCorrect: false
-                    },
-                ]
-            },
-        ]
-    )
+    const [questions, setQuestion] = useState(initQuestion)
     const [isPreviewImage, setIsPreviewImage] = useState(false)
     const [dataImagePreview, setDataImagePreview] = useState({
         title: '',
@@ -85,6 +85,7 @@ const Question = (props) => {
     }
 
     const handleAddRemoveAnswer = (type, questionId, answerId) => {
+        console.log('>>>', type, questionId, answerId)
         let questionCLone = _.cloneDeep(questions)
         if (type === 'Add') {
             const newAnswer =
@@ -151,20 +152,66 @@ const Question = (props) => {
 
     }
     const handleSubmitQuestionForQuiz = async (image) => {
-        await Promise.all(questions.map(async (questions) => {
+
+        if (_.isEmpty(selectedQuiz)) {
+            toast.error("Plesse choose a Quiz!")
+            return
+        }
+
+        //vld anrswes
+        let isValidAnswer = true;
+        let indexQ = 0, indexA = 0;
+
+        for (let i = 0; i < questions.length; i++) {
+
+            for (let j = 0; j < questions[i].answers.length; j++) {
+                if (!questions[i].answers[j].description) {
+                    isValidAnswer = false;
+                    indexA = j;
+                    break;
+                }
+            }
+            indexQ = i;
+            if (isValidAnswer === false) break;
+        }
+        if (isValidAnswer === false) {
+            toast.error(`not empty Answer ${indexA + 1} at Quetion ${indexQ + 1}`)
+            return;
+        }
+        //vld question
+
+        let isValidQuestion = true;
+        let indexQ1 = 0
+
+        for (let i = 0; i < questions.length; i++) {
+            if (!questions[i].description) {
+                isValidQuestion = false;
+                indexQ1 = i
+                break;
+            }
+        }
+        if (isValidQuestion === false) {
+            toast.error(`NO emty description for Question ${indexQ1 + 1}`);
+            return;
+        }
+
+        for (const question of questions) {
             const q = await postCreateNewQuetionForQuiz(
                 +selectedQuiz.value,
                 questions.description,
                 questions.imageFile);
 
-            await Promise.all(questions.answers.map(async (answer) =>
+            for (const answer of question.answers) {
                 await postCreateNewAnswerForQuizQuetion(
                     answer.description,
                     answer.correct_answer,
                     q.DT.id
                 )
-            ))
-        }));
+            }
+
+        }
+        toast.success('Create quetions and answers succced!')
+        setQuestion(initQuestion);
 
     }
 
