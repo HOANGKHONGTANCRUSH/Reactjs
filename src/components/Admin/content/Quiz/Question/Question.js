@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Select from 'react-select';
 import './Questions.scss'
 import { FaPlusCircle } from "react-icons/fa";
@@ -7,27 +7,23 @@ import { RiImageAddFill } from "react-icons/ri";
 import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
 import Lightbox from "react-awesome-lightbox";
+import { getAllQuizForAdmin, postCreateNewQuetionForQuiz, postCreateNewAnswerForQuizQuetion } from '../../../../../services/apiSevice';
 
 
 const Question = (props) => {
-    const options = [
-        { value: 'chocolate', label: 'Chocolate' },
-        { value: 'strawberry', label: 'Strawberry' },
-        { value: 'vanilla', label: 'Vanilla' },
-    ];
     const [selectedQuiz, setSelectedQuiz] = useState({})
 
     const [questions, setQuestion] = useState(
         [
             {
                 id: uuidv4(),
-                desciption: ' ',
+                description: ' ',
                 imageFile: '',
                 imageName: '',
                 answers: [
                     {
                         id: uuidv4(),
-                        desciption: ' ',
+                        description: ' ',
                         isCorrect: false
                     },
                 ]
@@ -39,26 +35,41 @@ const Question = (props) => {
         title: '',
         url: ''
     })
+    const [listQuiz, setListQuiz] = useState([]);
 
+    useEffect(() => {
+        fetchQuiz();
+    }, [])
 
-    console.log('>>> question', questions)
+    const fetchQuiz = async () => {
+        let res = await getAllQuizForAdmin();
+        if (res && res.EC === 0) {
+            let newQuiz = res.DT.map(item => {
+                return {
+                    value: item.id,
+                    label: `${item.id} - ${item.description}`
+                }
+            })
+            setListQuiz(newQuiz)
+        }
+    }
 
     const handleAddRemoveQuestion = (type, id) => {
         if (type === 'Add') {
             const newQuestion = {
                 id: uuidv4(),
-                desciption: '',
+                description: '',
                 imageFile: '',
                 imageName: '',
                 answers: [
                     {
                         id: uuidv4(),
-                        desciption: '',
+                        description: '',
                         isCorrect: false
                     },
                     {
                         id: uuidv4(),
-                        desciption: '',
+                        description: '',
                         isCorrect: false
                     },
                 ]
@@ -74,13 +85,12 @@ const Question = (props) => {
     }
 
     const handleAddRemoveAnswer = (type, questionId, answerId) => {
-        console.log('>>>', type, questionId, answerId)
         let questionCLone = _.cloneDeep(questions)
         if (type === 'Add') {
             const newAnswer =
             {
                 id: uuidv4(),
-                desciption: '',
+                description: '',
                 isCorrect: false,
             };
 
@@ -102,7 +112,7 @@ const Question = (props) => {
             let questionCLone = _.cloneDeep(questions)
             let index = questionCLone.findIndex(item => item.id === questionId);
             if (index > -1) {
-                questionCLone[index].desciption = value
+                questionCLone[index].description = value
                 setQuestion(questionCLone);
 
             }
@@ -113,9 +123,8 @@ const Question = (props) => {
     const handleOnChangeFileQuestion = (questionId, event) => {
         let questionCLone = _.cloneDeep(questions)
         let index = questionCLone.findIndex(item => item.id === questionId);
-        if (index > -1 && event.target && event.target.files && event.target.files[0]) {
+        if (index > -1 && event.target && event.target?.files && event.target.files[0]) {
             questionCLone[index].imageFile = event.target.files[0]
-            console.log(">>> check file :", event.target.files[0])
             questionCLone[index].imageName = event.target.files[0].name;
             setQuestion(questionCLone);
 
@@ -132,7 +141,7 @@ const Question = (props) => {
                         if (type === 'CHECKBOX') {
                             anwser.isCorrect = value;
                         } if (type === 'INPUT') {
-                            anwser.desciption = value;
+                            anwser.description = value;
                         }
                     }
                     return anwser;
@@ -141,8 +150,22 @@ const Question = (props) => {
         }
 
     }
-    const handleSubmitQuestionForQuiz = () => {
-        console.log("question :", questions)
+    const handleSubmitQuestionForQuiz = async (image) => {
+        await Promise.all(questions.map(async (questions) => {
+            const q = await postCreateNewQuetionForQuiz(
+                +selectedQuiz.value,
+                questions.description,
+                questions.imageFile);
+
+            await Promise.all(questions.answers.map(async (answer) =>
+                await postCreateNewAnswerForQuizQuetion(
+                    answer.description,
+                    answer.correct_answer,
+                    q.DT.id
+                )
+            ))
+        }));
+
     }
 
     const handlePreviewImage = (questionId) => {
@@ -167,9 +190,9 @@ const Question = (props) => {
                 <div className='col-6 form-group'>
                     <label className='mb-2'>Select Quiz :</label>
                     <Select
-                        selectedQuiz={selectedQuiz}
+                        value={selectedQuiz}
                         onChange={setSelectedQuiz}
-                        options={options}
+                        options={listQuiz}
                     />
                 </div>
                 <div className='mt-3 mb-2'>
@@ -187,7 +210,7 @@ const Question = (props) => {
                                             className="form-control"
                                             id="floatingInput"
                                             placeholder="name@example.com"
-                                            value={question.desciption}
+                                            value={question.description}
                                             onChange={(event) => handleOnchange('QUESTION', question.id, event.target.value)}
                                         />
                                         <label >Question {index + 1}'s Description</label>
@@ -243,7 +266,7 @@ const Question = (props) => {
                                                         className="form-control"
                                                         id="floatingInput"
                                                         placeholder="name@example.com"
-                                                        value={anwser.desciption}
+                                                        value={anwser.description}
                                                         onChange={(event) => handlAnswerQuestion('INPUT', anwser.id, question.id, event.target.value)}
                                                     />
                                                     <label >Answers {index + 1}</label>
