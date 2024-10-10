@@ -7,6 +7,8 @@ import { FcPlus } from "react-icons/fc";
 import QuizTable from './QuizTable';
 import Accordion from 'react-bootstrap/Accordion';
 import ModalUpdateQuiz from './ModalUpdateQuiz';
+import QuizQA from './QuizQA';
+import AssignQuiz from './AssignQuiz';
 
 
 
@@ -111,13 +113,24 @@ const MangageQuiz = (props) => {
                                 </div>
                             </fieldset>
                         </div>
+                        <div className="list-detail">
+                            <QuizTable />
+                        </div>
+                    </Accordion.Body>
+                </Accordion.Item>
+                <Accordion.Item eventKey="1">
+                    <Accordion.Header>Update Q/A Quizzes</Accordion.Header>
+                    <Accordion.Body>
+                        <QuizQA />
+                    </Accordion.Body>
+                </Accordion.Item>
+                <Accordion.Item eventKey="2">
+                    <Accordion.Header>Asign to User</Accordion.Header>
+                    <Accordion.Body>
+                        <AssignQuiz />
                     </Accordion.Body>
                 </Accordion.Item>
             </Accordion>
-            <div className="list-detail">
-                <QuizTable />
-                {/* <ModalUpdateQuiz /> */}
-            </div>
         </div>
     )
 }
