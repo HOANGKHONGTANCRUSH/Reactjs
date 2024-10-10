@@ -78,7 +78,7 @@ const putUpdateQuizForAdmin = (id, name, description, difficulty, image) => {
 }
 
 const deleteQuizForAdmin = (id) => {
-    return axios.delete(`/api/v1/quiz/${id}`);
+    return axios.delete(`api/v1/quiz/${id}`);
 }
 
 const postCreateNewQuetionForQuiz = (quiz_id, description, image) => {
@@ -96,6 +96,17 @@ const postCreateNewAnswerForQuizQuetion = (description, correct_answer, question
         question_id
     });
 }
+
+const postAssignQuiz = (quizId, userId) => {
+    return axios.post(`api/v1/quiz-assign-to-user`, {
+        quizId, userId
+    });
+}
+
+const getQuizWithQA = (quizId) => {
+    return axios.get(`api/v1/quiz-with-qa/${quizId}`);
+}
+
 export {
     postCreateNewUser, getAllUsers, putUpdateUser,
     DeleteUsers, getUSerWithPaginate, postLogin,
@@ -103,5 +114,6 @@ export {
     postSubmitQuiz, postCreateNewQuiz, getAllQuizForAdmin,
     putUpdateQuizForAdmin, deleteQuizForAdmin,
     postCreateNewQuetionForQuiz, postCreateNewAnswerForQuizQuetion,
+    postAssignQuiz, getQuizWithQA
 
 }

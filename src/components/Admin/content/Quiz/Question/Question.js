@@ -132,6 +132,7 @@ const Question = (props) => {
         }
     }
 
+
     const handlAnswerQuestion = (type, answerId, questionId, value) => {
         let questionCLone = _.cloneDeep(questions)
         let index = questionCLone.findIndex(item => item.id === questionId);
@@ -204,7 +205,7 @@ const Question = (props) => {
             for (const answer of question.answers) {
                 await postCreateNewAnswerForQuizQuetion(
                     answer.description,
-                    answer.correct_answer,
+                    answer.isCorrect,
                     q.DT.id
                 )
             }
